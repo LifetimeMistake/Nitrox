@@ -14,7 +14,7 @@ namespace NitroxClient.GameLogic.Bases.Spawning.BasePiece
             TechType.BaseLadder
         };
 
-        protected override void SpawnPostProcess(Base latestBase, Int3 latestCell, GameObject finishedPiece)
+        protected override void SpawnPostProcess(Base latestBase, Int3 latestCell, GameObject finishedPiece, bool justConstructed)
         {
             bool builtLadderOnFloor = finishedPiece.name.Contains("Bottom");
             int searchDirection = builtLadderOnFloor ? -1 : 1;

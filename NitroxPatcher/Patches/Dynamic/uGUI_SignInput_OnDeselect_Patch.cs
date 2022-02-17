@@ -18,25 +18,10 @@ namespace NitroxPatcher.Patches.Dynamic
         {
             GameObject gameObject = __instance.gameObject.FindAncestor<PrefabIdentifier>().gameObject;
             NitroxId id = NitroxEntity.GetId(gameObject);
-            TechTag tag = gameObject.GetComponent<TechTag>();
-            
-            switch (tag.type)
-            {
-                case TechType.SmallStorage:
-                    // In the water
-                    EntitySignMetadata entitySignMetadata = new(__instance.text, __instance.colorIndex, __instance.scaleIndex, __instance.elementsState, __instance.IsBackground());
-                    Resolve<Entities>().BroadcastMetadataUpdate(id, entitySignMetadata);
-                    break;
-                case TechType.Sign:
-                case TechType.SmallLocker:
-                    // On wall
-                    SignMetadata signMetadata = new(__instance.text, __instance.colorIndex, __instance.scaleIndex, __instance.elementsState, __instance.IsBackground());
-                    Resolve<Building>().MetadataChanged(id, signMetadata);
-                    break;
-                default:
-                    Log.Warn($"[{nameof(uGUI_SignInput_OnDeselect_Patch)}] no case planned for tech type {tag.type}");
-                    break;
-            }
+            NitroxId baseParentId = NitroxEntity.GetId(gameObject.transform.parent.gameObject);
+
+            SignMetadata signMetadata = new(__instance.text, __instance.colorIndex, __instance.scaleIndex, __instance.elementsState, __instance.IsBackground());
+            NitroxServiceLocator.LocateService<Building>().MetadataChanged(baseParentId, id, signMetadata);
         }
 
         public override void Patch(Harmony harmony)
