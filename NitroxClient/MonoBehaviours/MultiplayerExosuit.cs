@@ -1,5 +1,6 @@
-﻿using NitroxClient.Unity.Smoothing;
-using NitroxModel.Helper;
+﻿using NitroxClient.GameLogic.FMOD;
+using NitroxClient.Unity.Smoothing;
+using NitroxModel.Core;
 using UnityEngine;
 
 namespace NitroxClient.MonoBehaviours
@@ -9,6 +10,7 @@ namespace NitroxClient.MonoBehaviours
         private bool lastThrottle;
         private float timeJetsChanged;
         private Exosuit exosuit;
+        private SoundData jetsSoundData;
 
         protected override void Awake()
         {
@@ -17,6 +19,7 @@ namespace NitroxClient.MonoBehaviours
             WheelPitchSetter = value => exosuit.steeringWheelPitch = value;
             base.Awake();
             SmoothRotation = new ExosuitSmoothRotation(gameObject.transform.rotation);
+            NitroxServiceLocator.LocateService<FMODSystem>().TryGetSoundData(exosuit.loopingJetSound.asset.path, out jetsSoundData);
         }
 
         internal override void Enter()
@@ -24,7 +27,6 @@ namespace NitroxClient.MonoBehaviours
             GetComponent<Rigidbody>().freezeRotation = false;
             exosuit.SetIKEnabled(true);
             exosuit.thrustIntensity = 0;
-            exosuit.ambienceSound.Play();
             base.Enter();
         }
 
@@ -34,13 +36,13 @@ namespace NitroxClient.MonoBehaviours
             exosuit.SetIKEnabled(false);
             exosuit.loopingJetSound.Stop();
             exosuit.fxcontrol.Stop(0);
-            exosuit.ambienceSound.Stop();
             base.Exit();
         }
 
         internal override void SetThrottle(bool isOn)
         {
-            if (timeJetsChanged + 3f <= Time.time && lastThrottle != isOn)
+            if (timeJetsChanged + 3f <= Time.time && lastThrottle != isOn &&
+                Vector3.Distance(exosuit.transform.position, Player.main.transform.position) < jetsSoundData.SoundRadius)
             {
                 timeJetsChanged = Time.time;
                 lastThrottle = isOn;

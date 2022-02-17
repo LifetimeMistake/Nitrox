@@ -43,27 +43,32 @@ namespace NitroxClient.GameLogic.FMOD
             }
         }
 
-        public static FMODSuppressor SuppressSounds()
-        {
-            return new();
-        }
-
         public bool IsWhitelisted(string path)
         {
-            return assetWhitelist.TryGetValue(path, out SoundData soundData) && soundData.IsWhitelisted;
+            return TryGetSoundData(path, out SoundData soundData) && soundData.IsWhitelisted;
         }
 
         public bool IsWhitelisted(string path, out bool isGlobal, out float radius)
         {
-            bool hasEntry = assetWhitelist.TryGetValue(path, out SoundData soundData);
-            if (hasEntry)
+            if (TryGetSoundData(path, out SoundData soundData))
             {
                 isGlobal = soundData.IsGlobal;
                 radius = soundData.SoundRadius;
                 return soundData.IsWhitelisted;
             }
+
             isGlobal = false;
             radius = -1f;
+            return false;
+        }
+
+        public bool TryGetSoundData(string path, out SoundData soundData)
+        {
+            if (assetWhitelist.TryGetValue(path, out soundData))
+            {
+                return true;
+            }
+            soundData = default;
             return false;
         }
 
@@ -85,6 +90,11 @@ namespace NitroxClient.GameLogic.FMOD
         public void PlayStudioEmitter(NitroxId id, string assetPath, bool play, bool allowFadeout)
         {
             packetSender.Send(new PlayFMODStudioEmitter(id, assetPath, play, allowFadeout));
+        }
+
+        public void PlayEventInstance(NitroxId id, string assetPath, bool play, NitroxVector3 position, float volume, float radius, bool isGlobal)
+        {
+            packetSender.Send(new PlayFMODEventInstance(id, play, assetPath, position, volume, radius, isGlobal));
         }
 
         public Dictionary<string, SoundData> SoundDataList => assetWhitelist;

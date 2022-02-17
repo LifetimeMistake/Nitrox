@@ -11,13 +11,11 @@ namespace NitroxClient.GameLogic
     public class ExosuitModuleEvent
     {
         private readonly IPacketSender packetSender;
-        private readonly IMultiplayerSession multiplayerSession;
         private readonly Vehicles vehicles;
 
-        public ExosuitModuleEvent(IPacketSender packetSender, IMultiplayerSession multiplayerSession, Vehicles vehicles)
+        public ExosuitModuleEvent(IPacketSender packetSender, Vehicles vehicles)
         {
             this.packetSender = packetSender;
-            this.multiplayerSession = multiplayerSession;
             this.vehicles = vehicles;
         }
 
@@ -85,7 +83,6 @@ namespace NitroxClient.GameLogic
             if (armAction == ExosuitArmAction.START_USE_TOOL)
             {
                 drillArm.animator.SetBool("use_tool", true);
-                drillArm.loop.Play();
             }
             else if (armAction == ExosuitArmAction.END_USE_TOOL)
             {
@@ -211,6 +208,5 @@ namespace NitroxClient.GameLogic
                 Log.Error("Torpedo arm got an arm action he should not get: " + armAction);
             }
         }
-
     }
 }

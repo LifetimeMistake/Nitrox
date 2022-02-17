@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using FMOD.Studio;
 using FMODUnity;
+using NitroxModel.DataStructures;
 using UnityEngine;
 #pragma warning disable 618
 
@@ -11,6 +12,7 @@ namespace NitroxClient.MonoBehaviours
         private readonly Dictionary<string, FMOD_CustomEmitter> customEmitters = new();
         private readonly Dictionary<string, KeyValuePair<FMOD_CustomLoopingEmitter, float>> loopingEmitters = new();
         private readonly Dictionary<string, FMOD_StudioEventEmitter> studioEmitters = new();
+        private readonly Dictionary<string, Dictionary<NitroxId, EventInstance>> eventInstances = new(); // 2D Sounds
 
         public void AddEmitter(string path, FMOD_CustomEmitter customEmitter, float radius)
         {
@@ -56,6 +58,22 @@ namespace NitroxClient.MonoBehaviours
             }
         }
 
+        public void AddEventInstance(string path, EventInstance eventInstance, NitroxId emitterId)
+        {
+            if (!eventInstances.TryGetValue(path, out Dictionary<NitroxId, EventInstance> instances))
+            {
+                eventInstances.Add(path, instances = new Dictionary<NitroxId, EventInstance>());
+            }
+
+            if (instances.ContainsKey(emitterId))
+            {
+                Log.Warn($"[FMODEmitterController] eventInstances of path {path} already contains {emitterId}");
+                return;
+            }
+
+            instances.Add(emitterId, eventInstance);
+        }
+
         public void PlayCustomEmitter(string path) => customEmitters[path]?.Play();
         public void ParamCustomEmitter(string path, int paramIndex, float value) => customEmitters[path]?.SetParameterValue(paramIndex, value);
         public void StopCustomEmitter(string path) => customEmitters[path]?.Stop();
@@ -73,6 +91,20 @@ namespace NitroxClient.MonoBehaviours
             eventInstance.start();
             eventInstance.release();
             loopingEmitter.timeLastStopSound = Time.time;
+        }
+
+
+        public void PlayEventInstance(string path, float volume, NitroxId sourceId)
+        {
+            EventInstance eventInstance = eventInstances[path][sourceId];
+            eventInstance.setVolume(volume);
+            eventInstance.start();
+        }
+
+        public void StopEventInstance(string path, NitroxId sourceId)
+        {
+            EventInstance eventInstance = eventInstances[path][sourceId];
+            eventInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         }
     }
 }
