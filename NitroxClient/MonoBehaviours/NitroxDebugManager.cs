@@ -9,13 +9,13 @@ namespace NitroxClient.MonoBehaviours
 {
     public class NitroxDebugManager : MonoBehaviour
     {
-        public readonly List<BaseDebugger> Debuggers;
+        public List<BaseDebugger> Debuggers;
         public readonly KeyCode EnableDebuggerHotkey = KeyCode.F7;
         private readonly HashSet<BaseDebugger> prevActiveDebuggers = new HashSet<BaseDebugger>();
         private bool isDebugging;
         private Rect windowRect;
 
-        private NitroxDebugManager()
+        private void Awake()
         {
             Debuggers = NitroxServiceLocator.LocateServicePreLifetime<IEnumerable<BaseDebugger>>().ToList();
         }
