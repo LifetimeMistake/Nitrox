@@ -2,8 +2,8 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using NitroxClient.GameLogic.FMOD;
-using NitroxClient.GameLogic.PlayerModel;
-using NitroxClient.GameLogic.PlayerModel.Abstract;
+using NitroxClient.GameLogic.PlayerLogic.PlayerModel;
+using NitroxClient.GameLogic.PlayerLogic.PlayerModel.Abstract;
 using NitroxClient.MonoBehaviours;
 using NitroxClient.Unity.Helper;
 using NitroxModel.Core;

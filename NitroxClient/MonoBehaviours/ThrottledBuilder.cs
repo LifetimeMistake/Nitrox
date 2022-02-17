@@ -305,7 +305,7 @@ namespace NitroxClient.MonoBehaviours
 
             NitroxEntity.SetNewId(finishedPiece, pieceId);
 
-            BasePieceSpawnProcessor.RunSpawnProcessor(finishedPiece.GetComponent<BaseDeconstructable>(), latestBase, latestCell, finishedPiece);
+            BasePieceSpawnProcessor.RunSpawnProcessor(finishedPiece.GetComponent<BaseDeconstructable>(), latestBase, latestCell, finishedPiece, true);
         }
 
         private void ConfigureNewlyConstructedBase(NitroxId newBaseId)
